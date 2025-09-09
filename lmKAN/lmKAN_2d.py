@@ -8,7 +8,7 @@ from .utilities import get_borders_cdf_grid, get_frobenius_regularization
 class LMKAN2DLayer(nn.Module):
     def __init__(
         self,
-        n_chunks,
+        num_grids,
         input_dim,
         output_dim,
         block_size_forward=1024,
@@ -24,7 +24,7 @@ class LMKAN2DLayer(nn.Module):
         if input_dim % 2 != 0:
             raise ValueError("input_dim must be divisible by 2")
 
-        self.n_chunks = n_chunks
+        self.num_grids = num_grids
         self.input_dim = input_dim
         self.output_dim = output_dim
         self.block_size_forward = block_size_forward
@@ -34,11 +34,11 @@ class LMKAN2DLayer(nn.Module):
         self.backward_fast_mode = backward_fast_mode
 
         # Create the func_parameter with shape:
-        # [n_chunks + 1, n_chunks + 1, output_dim, input_dim // 2]
+        # [num_grids + 1, num_grids + 1, output_dim, input_dim // 2]
         self.func_parameter = nn.Parameter(
             torch.empty(
-                n_chunks + 1,
-                n_chunks + 1,
+                num_grids + 1,
+                num_grids + 1,
                 output_dim,
                 input_dim // 2,
             )
@@ -53,7 +53,7 @@ class LMKAN2DLayer(nn.Module):
         self.register_buffer(
             "borders",
             torch.tensor(
-                get_borders_cdf_grid(n_chunks), dtype=torch.float32
+                get_borders_cdf_grid(num_grids), dtype=torch.float32
             ),
         )
 
