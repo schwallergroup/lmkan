@@ -46,7 +46,7 @@ Usage
     x = torch.randn(INPUT_DIM, BATCH_SIZE).cuda()  # lmKANs use batch-last data layout
     out = lmkan_layer(x)  # out has shape [OUTPUT_DIM, BATCH_SIZE]
 
-Backward pass is also included.
+Backward pass is included.
 
 The number of trainable parameters is :math:`(\text{NUM\_GRIDS}+1)^2 \times \text{OUTPUT\_DIM} \times \left\lfloor \text{INPUT\_DIM}/2 \right\rfloor`. Inference FLOPs are twice that of a linear layer of the same shape, independent of ``NUM_GRIDS``. So you get about :math:`(30+1)^2 / 2 \approx 480`× more trainable parameters.
 
