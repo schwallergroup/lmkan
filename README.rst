@@ -32,7 +32,7 @@ Usage
 
     NUM_GRIDS = 30
     BATCH_SIZE = 1024
-    INPUT_DIM = 256 
+    INPUT_DIM = 256
     OUTPUT_DIM = 256
 
     lmkan_layer = LMKAN2DLayer(
@@ -46,10 +46,12 @@ Usage
     x = torch.randn(INPUT_DIM, BATCH_SIZE).cuda()  # lmKANs use batch-last data layout
     out = lmkan_layer(x)  # out has shape [OUTPUT_DIM, BATCH_SIZE]
 
-Backward pass is included.
+Backward pass is included. 
 
-The number of trainable parameters is :math:`(\text{NUM\_GRIDS}+1)^2 \times \text{OUTPUT\_DIM} \times \left\lfloor \text{INPUT\_DIM}/2 \right\rfloor`. Inference FLOPs are twice that of a linear layer of the same shape, independent of ``NUM_GRIDS``. So you get about :math:`(30+1)^2 / 2 \approx 480`× more trainable parameters.
+The number of trainable parameters is ``(NUM_GRIDS + 1)^2 * OUTPUT_DIM * (INPUT_DIM // 2)``. Inference FLOPs are *2x* of that of a linear layer of the same shape (``INPUT_DIM``, ``OUTPUT_DIM``), **not** depending on ``NUM_GRIDS``. 
 
-.. important::
-   Check performance caveats (including maximal supported values for ``NUM_GRIDS`` depending on GPU type and ``tile_size_*``) and preconditioning advice in the documentation.
+For the example above, you get as many as ``(30 + 1)^2 // 2 ~ 480`` more trainable parameters by paying 2x of FLOPs and 6-10x wall-clock inference time (depending on the specific GPU). 
+
+**Important** check performance caveats (including maximal supported values for ``NUM_GRIDS`` depending on GPU type and ``tile_size``) and preconditioning advice in the documentation. 
+
 
