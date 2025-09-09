@@ -15,8 +15,9 @@ A general-purpose drop-in replacement for high-dimensional linear mappings (aka 
 +++++++++++++
 Installation
 +++++++++++++
+Make sure you have numpy and CUDA-enabled PyTorch installed.
 
 Run :bash:`pip install .`
 
-This command will trigger in-place compilation of the CUDA kernels, so you will need the nvcc compiler. 
+This command will trigger in-place compilation of the CUDA kernels, so you will need the ``nvcc`` compiler (CUDA toolkit). 
 

@@ -30,6 +30,7 @@ setup(
     ],
     install_requires=[
         'torch',
+        'numpy'
     ],
     cmdclass={
         'build_ext': BuildExtension

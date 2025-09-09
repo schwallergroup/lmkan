@@ -16,7 +16,7 @@ class LMKAN_2D_OP(Function):
         ctx.save_for_backward(parameters, x)
 
         # Call the forward custom function with forward-specific block and tile sizes
-        output = lmKAN_kernels.forward_lmKAN_full_2d(
+        output = lmKAN_kernels.forward_dkan_full_2d(
             parameters, x,
             block_size_forward,
             cdf_grid,
@@ -38,7 +38,7 @@ class LMKAN_2D_OP(Function):
 
         # Call the backward custom function with backward-specific block and tile sizes
         # This should return gradients for parameters and x
-        grad_parameters, grad_x = lmKAN_kernels.backward_lmKAN_full_2d(
+        grad_parameters, grad_x = lmKAN_kernels.backward_dkan_full_2d(
             parameters, x,
             grad_output,
             block_size_backward,
