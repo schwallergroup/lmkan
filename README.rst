@@ -81,6 +81,7 @@ We found it effective to first use very strong Hessian regularization, and next 
 .. code-block:: python
 
     import math
+    
     def get_fitting_schedule(epoch_number: int):
         HESSIAN_DECAY_EPOCHS = 250
         HESSIAN_DECAY_SCALE = 30
