@@ -44,7 +44,7 @@ Usage
     ).cuda()
 
     x = torch.randn(INPUT_DIM, BATCH_SIZE).cuda()  # lmKANs use batch-last data layout
-    out = lmkan_layer(x)  # out has shape [OUTPUT_DIM, BATCH_SIZE]
+    output = lmkan_layer(x)  # output has shape [OUTPUT_DIM, BATCH_SIZE]
 
 The number of trainable parameters is ``(NUM_GRIDS + 1)^2 * OUTPUT_DIM * (INPUT_DIM // 2)``. Inference FLOPs are *2x* of that of a linear layer of the same shape (same ``INPUT_DIM`` and ``OUTPUT_DIM``), **not** depending on ``NUM_GRIDS``. 
 
