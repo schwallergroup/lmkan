@@ -32,8 +32,8 @@ Usage
 
     NUM_GRIDS = 26
     BATCH_SIZE = 1024
-    INPUT_DIM = 256 # must be divisible by tile_size_forward and tile_size_backward
-    OUTPUT_DIM = 256 # must be divisible by tile_size_forward and tile_size_backward
+    INPUT_DIM = 128 # must be divisible by tile_size_forward and tile_size_backward
+    OUTPUT_DIM = 128 # must be divisible by tile_size_forward and tile_size_backward
 
     lmkan_layer = LMKAN2DLayer(
         num_grids=NUM_GRIDS,
