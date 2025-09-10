@@ -82,7 +82,7 @@ We found it effective to first use very strong Hessian regularization, and next 
 
     import math
     
-    def get_fitting_schedule(epoch_number: int):
+    def get_fitting_schedule(epoch_number):
         HESSIAN_DECAY_EPOCHS = 250
         HESSIAN_DECAY_SCALE = 30
         COSINE_EPOCHS = 250
