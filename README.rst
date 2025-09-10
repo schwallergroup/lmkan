@@ -103,7 +103,7 @@ We found it effective to first use very strong Hessian regularization, and next 
         return learning_rate, hessian_regularization_lambda
 
 
-The hypers in the function above represent a good starting point for the methane dataset (Cartesian Components representation, see section 4.2). The final model is not so accurate, as we report, but fitting takes less than one hour, and it is already sufficient to become both FLOPs and wall-clock time Pareto optimal compared to MLPs. 
+The hypers in the function above represent a good starting point for the methane dataset (Cartesian Components representation, see section 4.2). The resulting model is not so accurate, as we report, but fitting takes less than one hour, and it is already sufficient to become both FLOPs and wall-clock time Pareto optimal compared to MLPs. 
 
 ++++++++++++++++++++++++
 Preprint
