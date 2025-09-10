@@ -80,6 +80,7 @@ We found it effective to first use very strong Hessian regularization, and next 
 
 .. code-block:: python
 
+    import math
     def get_fitting_schedule(epoch_number: int):
         HESSIAN_DECAY_EPOCHS = 250
         HESSIAN_DECAY_SCALE = 30
@@ -91,7 +92,7 @@ We found it effective to first use very strong Hessian regularization, and next 
         if epoch_number <= HESSIAN_DECAY_EPOCHS:
             # Phase 1: constant LR, Hessian decay
             learning_rate = BASE_LR
-            hessian_regularization_lambda = INITIAL_HESSIAN_WEIGHT / (10 ** ((epoch_number / HESSIAN_DECAY_SCALE)))
+            hessian_regularization_lambda = INITIAL_HESSIAN_WEIGHT / (10 ** (epoch_number / HESSIAN_DECAY_SCALE))
         else:
             # Phase 2: LR cosine decay
             offset = epoch_number - HESSIAN_DECAY_EPOCHS
