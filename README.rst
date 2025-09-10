@@ -75,7 +75,7 @@ The Hessian regularization, which pushes all the inner functions to be smooth an
 
 Each lmKAN layer has the method ``def get_hessian_regularization(self):``. Sum these values across all the lmKAN layers of the model, and next add to the loss ``lambda * total_hessian_regularization``, where ``lambda`` is the regularization strength. 
 
-We found it effective to first use very strong Hessian regularization, and next gradually relax it during the fitting. So, essentially, the model first learns low-frequency components, and next, when they are learned, enables high-frequency ones. As an example, see the following fitting schedule:
+We found it effective to first use very strong Hessian regularization, and next gradually relax it during the fitting. So, the model first learns low-frequency components, and next, when they are learned, enables high-frequency ones. As an example, see the following fitting schedule:
 
 
 .. code-block:: python
