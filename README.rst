@@ -48,7 +48,7 @@ Usage
 
 The number of trainable parameters is ``(NUM_GRIDS + 1)^2 * OUTPUT_DIM * (INPUT_DIM // 2)``. Inference FLOPs are *2x* of that of a linear layer of the same shape (same ``INPUT_DIM`` and ``OUTPUT_DIM``), **not** depending on ``NUM_GRIDS``. 
 
-For the example above, you get as many as ``(26 + 1)^2 / 2 ~ 360x`` more trainable parameters than that of a linear layer by paying 2x more formal FLOPs and ~10x wall-clock inference time (depending on the specific GPU). 
+For the example above, you get as many as ``(26 + 1)^2 / 2 ~ 360x`` more trainable parameters than that of a linear layer of the same shape by paying 2x more formal FLOPs and ~10x wall-clock inference time (depending on the specific GPU). 
 
 The computational cost of backward also doesn't depend on ``NUM_GRIDS``. 
 
