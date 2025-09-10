@@ -71,5 +71,5 @@ class LMKAN2DLayer(nn.Module):
             self.backward_fast_mode,
         )
 
-    def get_frobenius_regularization(self):
+    def get_hessian_regularization(self):
         return get_frobenius_regularization(self.func_parameter, self.borders)

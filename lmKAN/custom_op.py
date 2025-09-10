@@ -48,9 +48,11 @@ class LMKAN_2D_OP(Function):
             fast_mode = backward_fast_mode
         )
 
-        # Return gradients for each input of forward:
-        # gradients for parameters and x; None for integer arguments
-        return grad_parameters, grad_x, None, None, None, None, None, None
+        # Return gradients for each input of forward (9 total):
+        # parameters, x, block_size_forward, block_size_backward,
+        # tile_size_forward, tile_size_backward, cdf_grid,
+        # batch_last, backward_fast_mode
+        return grad_parameters, grad_x, None, None, None, None, None, None, None
 
 # Convenience wrapper to use the custom autograd Function
 

@@ -19,7 +19,7 @@ Make sure you have numpy and CUDA-enabled PyTorch installed.
 
 Run :bash:`pip install .`
 
-This command will trigger in-place compilation of the CUDA kernels, so you will need the ``nvcc`` compiler (CUDA toolkit). 
+This command will trigger in-place compilation of the CUDA kernels, so you will need the ``nvcc`` compiler (CUDA toolkit) at hand. 
 
 +++++++++++++
 Usage
@@ -46,11 +46,11 @@ Usage
     x = torch.randn(INPUT_DIM, BATCH_SIZE).cuda()  # lmKANs use batch-last data layout
     out = lmkan_layer(x)  # out has shape [OUTPUT_DIM, BATCH_SIZE]
 
-Backward pass is included. 
-
 The number of trainable parameters is ``(NUM_GRIDS + 1)^2 * OUTPUT_DIM * (INPUT_DIM // 2)``. Inference FLOPs are *2x* of that of a linear layer of the same shape (``INPUT_DIM``, ``OUTPUT_DIM``), **not** depending on ``NUM_GRIDS``. 
 
 For the example above, you get as many as ``(30 + 1)^2 // 2 ~ 480`` more trainable parameters by paying 2x of FLOPs and 6-10x wall-clock inference time (depending on the specific GPU). 
+
+The computational cost of backward also doesn't depend on ``NUM_GRIDS``. 
 
 **Important** check performance caveats (including maximal supported values for ``NUM_GRIDS`` depending on GPU type and ``tile_size``) and preconditioning advice in the documentation. 
 
