@@ -24,18 +24,18 @@ torch.backends.cudnn.allow_tf32 = False
 
 
 # Global settings (mirroring the README example)
-NUM_GRIDS: int = 26
-BATCH_SIZE: int = 1024
-INPUT_DIM: int = 128
-OUTPUT_DIM: int = 128
-TILE_SIZE_FORWARD: int = 8
+NUM_GRIDS: int = 20
+BATCH_SIZE: int = 1024 * 1024
+INPUT_DIM: int = 512
+OUTPUT_DIM: int = 512
+TILE_SIZE_FORWARD: int = 16
 TILE_SIZE_BACKWARD: int = 4
-NUM_BLOCKS_FORWARD: int = 1024
+NUM_BLOCKS_FORWARD: int = 512
 NUM_BLOCKS_BACKWARD: int = 512  
 
 # Benchmark controls
 NUM_WARMUP_RUNS: int = 5
-NUM_TIMED_RUNS: int = 10
+NUM_TIMED_RUNS: int = 100
 
 
 def _print_settings() -> None:
