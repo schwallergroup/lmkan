@@ -124,6 +124,7 @@ Efficiency analysis
 | BLOCK_SIZE_BACKWARD: 512
 | 
 | MEASURED TIME: ~86ms
+| 
 
 A little math: total number of 2D functions to compute is BATCH_SIZE * (INPUT_DIM / 2) * OUTPUT_DIM. Each requires 4 float32 reads from shared memory. Each float32 is 4 bytes. Therefore, the actual shared-memory throughput is ~(1024 * 1024 * 256 * 512 * 4 * 4 / 0.086)≈ 23 TB/s. It is ~70% of the theoretical peak 33 TB/s shared-memory throughput of the H100 SXM, see, for instance, here https://hazyresearch.stanford.edu/blog/2024-05-12-tk.
 
