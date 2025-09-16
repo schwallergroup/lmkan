@@ -24,18 +24,18 @@ torch.backends.cudnn.allow_tf32 = False
 
 
 # Global settings (mirroring the README example)
-NUM_GRIDS: int = 20
-BATCH_SIZE: int = 1024 * 1024
-INPUT_DIM: int = 512
-OUTPUT_DIM: int = 512
-TILE_SIZE_FORWARD: int = 16
+NUM_GRIDS: int = 26
+BATCH_SIZE: int = 1024
+INPUT_DIM: int = 128
+OUTPUT_DIM: int = 128
+TILE_SIZE_FORWARD: int = 8
 TILE_SIZE_BACKWARD: int = 4
-NUM_BLOCKS_FORWARD: int = 512
-NUM_BLOCKS_BACKWARD: int = 512  
+BLOCK_SIZE_FORWARD: int = 1024
+BLOCK_SIZE_BACKWARD: int = 512  
 
 # Benchmark controls
 NUM_WARMUP_RUNS: int = 5
-NUM_TIMED_RUNS: int = 100
+NUM_TIMED_RUNS: int = 10
 
 
 def _print_settings() -> None:
@@ -47,8 +47,8 @@ def _print_settings() -> None:
     print(f"  OUTPUT_DIM         = {OUTPUT_DIM}")
     print(f"  TILE_SIZE_FORWARD  = {TILE_SIZE_FORWARD}")
     print(f"  TILE_SIZE_BACKWARD = {TILE_SIZE_BACKWARD}")
-    print(f"  NUM_BLOCKS_FORWARD = {NUM_BLOCKS_FORWARD}")
-    print(f"  NUM_BLOCKS_BACKWARD= {NUM_BLOCKS_BACKWARD}")
+    print(f"  BLOCK_SIZE_FORWARD = {BLOCK_SIZE_FORWARD}")
+    print(f"  BLOCK_SIZE_BACKWARD= {BLOCK_SIZE_BACKWARD}")
     print(f"  NUM_WARMUP_RUNS    = {NUM_WARMUP_RUNS}")
     print(f"  NUM_TIMED_RUNS     = {NUM_TIMED_RUNS}")
     if torch.cuda.is_available():
@@ -73,8 +73,8 @@ def benchmark_forward() -> float | None:
         output_dim=OUTPUT_DIM,
         tile_size_forward=TILE_SIZE_FORWARD,
         tile_size_backward=TILE_SIZE_BACKWARD,
-        block_size_forward=NUM_BLOCKS_FORWARD,
-        block_size_backward=NUM_BLOCKS_BACKWARD,
+        block_size_forward=BLOCK_SIZE_FORWARD,
+        block_size_backward=BLOCK_SIZE_BACKWARD,
     ).cuda()
     layer.eval()
 
