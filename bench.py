@@ -24,13 +24,13 @@ torch.backends.cudnn.allow_tf32 = False
 
 
 # Global settings (mirroring the README example)
-NUM_GRIDS: int = 20
-BATCH_SIZE: int = 1024*1024
-INPUT_DIM: int = 512
-OUTPUT_DIM: int = 512
-TILE_SIZE_FORWARD: int = 16
+NUM_GRIDS: int = 26
+BATCH_SIZE: int = 1024
+INPUT_DIM: int = 128
+OUTPUT_DIM: int = 128
+TILE_SIZE_FORWARD: int = 8
 TILE_SIZE_BACKWARD: int = 4
-NUM_BLOCKS_FORWARD: int = 512
+NUM_BLOCKS_FORWARD: int = 1024
 NUM_BLOCKS_BACKWARD: int = 512  
 
 # Benchmark controls
@@ -145,7 +145,7 @@ def main() -> int:
 
     _print_settings()
     
-    print(f"\nResults (forward only, {NUM_TIMED_RUNS} runs after {NUM_WARMUP_RUNS} warmups):")
+    print(f"\nResults ({NUM_TIMED_RUNS} runs after {NUM_WARMUP_RUNS} warmups):")
     print("  lmKAN:")
     print(f"    Average time: {lmkan_avg_ms:.3f} ms")
     print(f"    Total time:      {lmkan_total_ms:.3f} ms")
@@ -163,7 +163,6 @@ def main() -> int:
     print("\nPer-parameter timing (seconds per parameter; average per run):")
     print(f"  Parameters: lmKAN={lmkan_params:,}, Linear={linear_params:,}")
 
-    print("  Forward:")
     print(f"    lmKAN:  {lmkan_fwd_spp:.3e} s/param")
     print(f"    Linear: {linear_fwd_spp:.3e} s/param")
     print(f"    LMKAN vs Linear time per param speed up: {linear_fwd_spp / lmkan_fwd_spp:.3f}x")
