@@ -24,13 +24,13 @@ torch.backends.cudnn.allow_tf32 = False
 
 
 # Global settings (mirroring the README example)
-NUM_GRIDS: int = 26
-BATCH_SIZE: int = 1024
-INPUT_DIM: int = 128
-OUTPUT_DIM: int = 128
-TILE_SIZE_FORWARD: int = 8
+NUM_GRIDS: int = 20
+BATCH_SIZE: int = 1024*1024
+INPUT_DIM: int = 512
+OUTPUT_DIM: int = 512
+TILE_SIZE_FORWARD: int = 16
 TILE_SIZE_BACKWARD: int = 4
-NUM_BLOCKS_FORWARD: int = 1024  
+NUM_BLOCKS_FORWARD: int = 512
 NUM_BLOCKS_BACKWARD: int = 512  
 
 # Benchmark controls
@@ -73,6 +73,8 @@ def benchmark_forward() -> float | None:
         output_dim=OUTPUT_DIM,
         tile_size_forward=TILE_SIZE_FORWARD,
         tile_size_backward=TILE_SIZE_BACKWARD,
+        block_size_forward=NUM_BLOCKS_FORWARD,
+        block_size_backward=NUM_BLOCKS_BACKWARD,
     ).cuda()
     layer.eval()
 
@@ -129,100 +131,17 @@ def benchmark_linear_forward() -> float | None:
     return total_ms
 
 
-def benchmark_lmkan_backward() -> float | None:
-    """Run LMKAN backward multiple times and return total latency in ms (backward only)."""
-    if not torch.cuda.is_available():
-        print("ERROR: CUDA is required for this benchmark. Please install CUDA-enabled PyTorch and run on a machine with a CUDA GPU.")
-        return None
-
-    device = torch.device("cuda")
-
-    layer = LMKAN2DLayer(
-        num_grids=NUM_GRIDS,
-        input_dim=INPUT_DIM,
-        output_dim=OUTPUT_DIM,
-        tile_size_forward=TILE_SIZE_FORWARD,
-        tile_size_backward=TILE_SIZE_BACKWARD,
-    ).to(device)
-    layer.train()
-
-    x = torch.randn(INPUT_DIM, BATCH_SIZE, device=device, dtype=torch.float32)
-
-    # Warmup: forward + backward
-    for _ in range(NUM_WARMUP_RUNS):
-        layer.zero_grad(set_to_none=True)
-        out = layer(x)
-        loss = out.sum()
-        loss.backward()
-    torch.cuda.synchronize()
-
-    # Timed runs: time only backward
-    total_ms = 0.0
-    for _ in range(NUM_TIMED_RUNS):
-        layer.zero_grad(set_to_none=True)
-        out = layer(x)
-        loss = out.sum()
-        torch.cuda.synchronize()
-        start = time.perf_counter()
-        loss.backward()
-        torch.cuda.synchronize()
-        end = time.perf_counter()
-        total_ms += (end - start) * 1000.0
-
-    return total_ms
-
-
-def benchmark_linear_backward() -> float | None:
-    """Run nn.Linear backward multiple times and return total latency in ms (backward only)."""
-    if not torch.cuda.is_available():
-        print("ERROR: CUDA is required for this benchmark. Please install CUDA-enabled PyTorch and run on a machine with a CUDA GPU.")
-        return None
-
-    device = torch.device("cuda")
-
-    linear = nn.Linear(INPUT_DIM, OUTPUT_DIM, bias=False).to(device=device, dtype=torch.float32)
-    linear.train()
-
-    x = torch.randn(BATCH_SIZE, INPUT_DIM, device=device, dtype=torch.float32)
-
-    # Warmup: forward + backward
-    for _ in range(NUM_WARMUP_RUNS):
-        linear.zero_grad(set_to_none=True)
-        out = linear(x)
-        loss = out.sum()
-        loss.backward()
-    torch.cuda.synchronize()
-
-    # Timed runs: time only backward
-    total_ms = 0.0
-    for _ in range(NUM_TIMED_RUNS):
-        linear.zero_grad(set_to_none=True)
-        out = linear(x)
-        loss = out.sum()
-        torch.cuda.synchronize()
-        start = time.perf_counter()
-        loss.backward()
-        torch.cuda.synchronize()
-        end = time.perf_counter()
-        total_ms += (end - start) * 1000.0
-
-    return total_ms
 
 
 def main() -> int:
     lmkan_total_ms = benchmark_forward()
     linear_total_ms = benchmark_linear_forward()
-    lmkan_bwd_total_ms = benchmark_lmkan_backward()
-    linear_bwd_total_ms = benchmark_linear_backward()
-    if (lmkan_total_ms is None or linear_total_ms is None or
-        lmkan_bwd_total_ms is None or linear_bwd_total_ms is None):
+    if (lmkan_total_ms is None or linear_total_ms is None):
         _print_settings()
         return 1
 
     lmkan_avg_ms = lmkan_total_ms / float(NUM_TIMED_RUNS)
     linear_avg_ms = linear_total_ms / float(NUM_TIMED_RUNS)
-    lmkan_bwd_avg_ms = lmkan_bwd_total_ms / float(NUM_TIMED_RUNS)
-    linear_bwd_avg_ms = linear_bwd_total_ms / float(NUM_TIMED_RUNS)
 
     _print_settings()
     
@@ -234,22 +153,12 @@ def main() -> int:
     print(f"    Average time: {linear_avg_ms:.3f} ms")
     print(f"    Total time:      {linear_total_ms:.3f} ms")
 
-    print(f"\nResults (backward only, {NUM_TIMED_RUNS} runs after {NUM_WARMUP_RUNS} warmups):")
-    print("  lmKAN:")
-    print(f"    Average time: {lmkan_bwd_avg_ms:.3f} ms")
-    print(f"    Total time:      {lmkan_bwd_total_ms:.3f} ms")
-    print("  Linear (nn.Linear):")
-    print(f"    Average time: {linear_bwd_avg_ms:.3f} ms")
-    print(f"    Total time:      {linear_bwd_total_ms:.3f} ms")
-
     # Per-parameter statistics (seconds per parameter) using average per-run times
     lmkan_params = (NUM_GRIDS + 1) ** 2 * OUTPUT_DIM * (INPUT_DIM // 2)
     linear_params = INPUT_DIM * OUTPUT_DIM
 
-    lmkan_fwd_spp = (lmkan_avg_ms / 1000.0) / float(lmkan_params)
-    linear_fwd_spp = (linear_avg_ms / 1000.0) / float(linear_params)
-    lmkan_bwd_spp = (lmkan_bwd_avg_ms / 1000.0) / float(lmkan_params)
-    linear_bwd_spp = (linear_bwd_avg_ms / 1000.0) / float(linear_params)
+    lmkan_fwd_spp = (lmkan_avg_ms / 1000.0) / float(lmkan_params * BATCH_SIZE)
+    linear_fwd_spp = (linear_avg_ms / 1000.0) / float(linear_params * BATCH_SIZE)
 
     print("\nPer-parameter timing (seconds per parameter; average per run):")
     print(f"  Parameters: lmKAN={lmkan_params:,}, Linear={linear_params:,}")
@@ -258,12 +167,6 @@ def main() -> int:
     print(f"    lmKAN:  {lmkan_fwd_spp:.3e} s/param")
     print(f"    Linear: {linear_fwd_spp:.3e} s/param")
     print(f"    LMKAN vs Linear (speed per param): {linear_fwd_spp / lmkan_fwd_spp:.3f}x  (>1 means LMKAN is faster)")
-
-    print("  Backward:")
-    print(f"    lmKAN:  {lmkan_bwd_spp:.3e} s/param")
-    print(f"    Linear: {linear_bwd_spp:.3e} s/param")
-    print(f"    LMKAN vs Linear (speed per param): {linear_bwd_spp / lmkan_bwd_spp:.3f}x  (>1 means LMKAN is faster)")
-
     
     return 0
 
