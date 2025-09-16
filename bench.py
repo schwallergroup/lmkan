@@ -166,7 +166,7 @@ def main() -> int:
     print("  Forward:")
     print(f"    lmKAN:  {lmkan_fwd_spp:.3e} s/param")
     print(f"    Linear: {linear_fwd_spp:.3e} s/param")
-    print(f"    LMKAN vs Linear (speed per param): {linear_fwd_spp / lmkan_fwd_spp:.3f}x  (>1 means LMKAN is faster)")
+    print(f"    LMKAN vs Linear time per param speed up: {linear_fwd_spp / lmkan_fwd_spp:.3f}x")
     
     return 0
 
